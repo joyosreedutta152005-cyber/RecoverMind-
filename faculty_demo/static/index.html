@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RecoverMind — Faculty Demonstration</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark">RM</div>
+    <div>
+      <h1>RecoverMind</h1>
+      <p>Autonomous Failure Diagnosis &amp; Adaptive Recovery Architecture for LLM Agents</p>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span id="statusPill" class="status-pill idle">● Simulation Ready</span>
+    <button id="archBtn" class="btn btn-ghost">Architecture View</button>
+    <button id="themeBtn" class="btn btn-ghost" title="Toggle light/dark">◐</button>
+  </div>
+</header>
+
+<main id="mainView">
+
+  <!-- ============================================================ SCENARIO SELECTOR -->
+  <section class="panel" id="scenarioPanel">
+    <h2>Select Failure Scenario</h2>
+    <p class="hint">Every scenario below is one of the 14 fault types actually implemented in
+      <code>env/faults.py</code> / <code>recovermind/taxonomy.py</code> — nothing here is illustrative.</p>
+    <div id="scenarioCards" class="scenario-grid"></div>
+  </section>
+
+  <!-- ============================================================ CONTROLS -->
+  <section class="controls">
+    <button id="startBtn" class="btn btn-primary">▶ Start Simulation</button>
+    <button id="pauseBtn" class="btn btn-secondary" disabled>Pause</button>
+    <button id="resetBtn" class="btn btn-ghost">Reset Simulation</button>
+    <div class="speed">
+      <label for="speedRange">Playback speed</label>
+      <input type="range" id="speedRange" min="0.5" max="2.5" step="0.25" value="1">
+    </div>
+  </section>
+
+  <div class="workspace">
+    <!-- ============================================================ PIPELINE -->
+    <section class="panel pipeline-panel">
+      <h2>Recovery Pipeline</h2>
+      <div id="pipeline" class="pipeline">
+        <div class="pnode" data-stage="task"><span class="pnode-label">USER TASK</span></div>
+        <div class="parrow">↓</div>
+        <div class="pnode" data-stage="agent"><span class="pnode-label">LLM AGENT</span></div>
+        <div class="parrow">↓</div>
+        <div class="pnode" data-stage="tool"><span class="pnode-label">TOOL EXECUTE</span></div>
+        <div class="parrow">↓</div>
+        <div class="pnode" data-stage="failure"><span class="pnode-label">FAILURE ❌</span></div>
+        <div class="parrow">↓</div>
+        <div class="pnode" data-stage="diagnosis"><span class="pnode-label">DIAGNOSIS 🔍</span></div>
+        <div class="parrow">↓</div>
+        <div class="pnode" data-stage="recovery"><span class="pnode-label">RECOVERY 🧠</span></div>
+        <div class="parrow">↓</div>
+        <div class="pnode" data-stage="verify"><span class="pnode-label">VERIFICATION ✓</span></div>
+        <div class="parrow">↓</div>
+        <div class="pnode" data-stage="success"><span class="pnode-label">SUCCESS ✅</span></div>
+      </div>
+
+      <!-- ---- Agent status ---- -->
+      <div class="card" id="agentStatusCard">
+        <h3>Agent Status</h3>
+        <dl class="kv" id="agentStatusKV">
+          <dt>Task</dt><dd id="stTask">—</dd>
+          <dt>Agent State</dt><dd id="stState">IDLE</dd>
+          <dt>Current Action</dt><dd id="stAction">—</dd>
+          <dt>Tool Status</dt><dd id="stToolStatus">—</dd>
+          <dt>Failure Type</dt><dd id="stFailureType">—</dd>
+          <dt>Recovery Attempt</dt><dd id="stAttempt">0</dd>
+          <dt>Final State</dt><dd id="stFinal">—</dd>
+        </dl>
+      </div>
+
+      <!-- ---- Failure card ---- -->
+      <!-- ---- Ground truth: appears the instant the fault is injected, before any alarm ---- -->
+      <div class="card hidden ground-truth-card" id="groundTruthCard">
+        <h3>🎯 Ground Truth (hidden from the agent)</h3>
+        <div class="loc-check">
+          <div><strong>Expected injection point</strong> — declared in <code>env/faults.py</code>
+            before this run even starts: <span id="locExpected">—</span></div>
+          <div><strong>Actual injection point this run</strong>: <span id="locActual">—</span></div>
+          <div id="locMatch" class="loc-match">—</div>
+        </div>
+        <p class="hint" style="margin-top:8px">The agent cannot see this — RecoverMind's Monitor
+          has to discover it purely from downstream symptoms. Watch the step counter below to see
+          how many steps pass before an alarm fires (the detection lag).</p>
+      </div>
+
+      <div class="card hidden alert-card" id="failureCard">
+        <h3>⚠ FAILURE DETECTED</h3>
+        <p id="failureMsg">—</p>
+        <p><strong>Failure Type:</strong> <span id="failureType">—</span></p>
+        <p><strong>Detection lag:</strong> <span id="detectionLag">—</span></p>
+      </div>
+
+      <!-- ---- Diagnosis card ---- -->
+      <div class="card hidden" id="diagnosisCard">
+        <h3>Failure Diagnosis</h3>
+        <dl class="kv">
+          <dt>Observed Failure</dt><dd id="dxObserved">—</dd>
+          <dt>Failure Category</dt><dd id="dxCategory">—</dd>
+          <dt>Root Cause</dt><dd id="dxRootCause">—</dd>
+          <dt>Confidence</dt><dd id="dxConfidence">—</dd>
+        </dl>
+        <div id="dxCandidates" class="candidates"></div>
+      </div>
+
+      <!-- ---- Recovery strategy card ---- -->
+      <div class="card hidden" id="recoveryCard">
+        <h3>Recovery Strategy Selected</h3>
+        <div id="recoveryStrategy" class="strategy-box">—</div>
+        <div id="recoveryExecuting" class="hidden executing-line">
+          <span class="spinner"></span> Recovery Action Executing…
+        </div>
+      </div>
+
+      <!-- ---- Verification card ---- -->
+      <div class="card hidden" id="verifyCard">
+        <h3>Recovery Verification</h3>
+        <p class="hint">Checking recovered state…</p>
+        <ul class="checklist" id="verifyChecklist"></ul>
+      </div>
+
+      <!-- ---- Final result card ---- -->
+      <div class="card hidden result-card" id="resultCard">
+        <h3 id="resultTitle">—</h3>
+        <dl class="kv">
+          <dt>Failure Type</dt><dd id="resFailureType">—</dd>
+          <dt>Diagnosis</dt><dd id="resDiagnosis">—</dd>
+          <dt>Recovery Strategy</dt><dd id="resStrategy">—</dd>
+          <dt>Recovery Attempts</dt><dd id="resAttempts">—</dd>
+          <dt>Final Task State</dt><dd id="resFinalState">—</dd>
+          <dt>Control-Layer Decision Time</dt><dd id="resTime">—</dd>
+        </dl>
+      </div>
+
+      <!-- ---- Before / after ---- -->
+      <div class="card hidden" id="compareCard">
+        <h3>Before vs. After RecoverMind</h3>
+        <p class="hint">Both runs use the identical injected fault; only the control layer differs.</p>
+        <div class="compare-grid">
+          <div class="compare-col">
+            <h4>Without RecoverMind</h4>
+            <div id="compareBare" class="compare-flow">—</div>
+          </div>
+          <div class="compare-col">
+            <h4>With RecoverMind</h4>
+            <div id="compareRM" class="compare-flow">—</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ EVENT LOG -->
+    <aside class="panel log-panel">
+      <h2>Live Event Log</h2>
+      <p class="hint">Timestamps mark when each real, already-computed event is revealed
+        during this playback — not original inference latency (this demo runs the
+        deterministic scripted-host study, the same one behind the paper's Section IV
+        results).</p>
+      <div id="eventLog" class="event-log"></div>
+    </aside>
+  </div>
+</main>
+
+<!-- ============================================================ ARCHITECTURE VIEW -->
+<div id="archOverlay" class="overlay hidden">
+  <div class="overlay-inner">
+    <div class="overlay-head">
+      <h2>RecoverMind Control Layer — Architecture</h2>
+      <button id="archClose" class="btn btn-ghost">✕ Close</button>
+    </div>
+    <p class="hint">This is the actual figure from the paper (Fig. 1), not a simplified
+      stand-in. The host agent is unmodified; RecoverMind observes it through a read-only
+      trace tap and intervenes only when the Monitor's anomaly score crosses the alarm
+      threshold.</p>
+    <img src="architecture.png" alt="RecoverMind architecture diagram" class="arch-img">
+    <div class="arch-loop">
+      <h3>Normal Agent Workflow</h3>
+      <p>User Task → LLM Agent → Environment / Tools → (Task Complete)</p>
+      <h3>RecoverMind Recovery Loop (only engaged on an alarm)</h3>
+      <p>Detection (M) → Diagnosis (D) → Recovery Planning (P) → Recovery Execution (X) →
+        Verification (X) → resume the agent from the last verified checkpoint</p>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

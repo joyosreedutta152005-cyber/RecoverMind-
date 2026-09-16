@@ -1,0 +1,5 @@
+Python 3.8+ and the standard library only.
+
+# Optional, for `python -m pytest tests -q`. The test file also runs standalone:
+#   python tests/test_system.py
+pytest>=7.0 ; extra == "dev"
