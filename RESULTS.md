@@ -87,8 +87,8 @@ episodes).
 ## See it work live
 
 ```bash
-python faculty_demo/server.py
+python simulation/server.py
 ```
 Opens an interactive browser demo at `http://localhost:8877` — pick any of the 7 fault
 scenarios and watch RecoverMind detect, diagnose, repair, and verify it step by step,
-computed live from this same code. See `faculty_demo/README.md`.
+computed live from this same code. See `simulation/README.md`.

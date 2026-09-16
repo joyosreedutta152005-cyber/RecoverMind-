@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""RecoverMind faculty demonstration - backend.
+"""RecoverMind recovery simulation - backend.
 
 Separate from webapp/ on purpose (per the brief: keep the demo/visualisation layer apart
 from both the core package and the existing webapp demo). Zero third-party dependencies,
@@ -16,7 +16,7 @@ scripted host's decision-making time, not LLM inference latency, since this demo
 same deterministic host as the paper's Section IV study, not the live-model study.
 
 Run:
-    python faculty_demo/server.py
+    python simulation/server.py
     (then open http://localhost:8877 )
 """
 from __future__ import annotations
@@ -228,7 +228,7 @@ def operator_catalogue():
 
 # ---------------------------------------------------------------- HTTP layer
 class Handler(BaseHTTPRequestHandler):
-    server_version = "RecoverMindFacultyDemo/1.0"
+    server_version = "RecoverMindSimulation/1.0"
 
     def log_message(self, fmt, *args):
         pass
@@ -298,7 +298,7 @@ class Handler(BaseHTTPRequestHandler):
 def main():
     srv = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
     url = "http://127.0.0.1:%d" % PORT
-    print("RecoverMind faculty demo running at %s  (Ctrl+C to stop)" % url)
+    print("RecoverMind simulation running at %s  (Ctrl+C to stop)" % url)
     try:
         webbrowser.open(url)
     except Exception:

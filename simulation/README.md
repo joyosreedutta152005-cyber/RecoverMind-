@@ -1,7 +1,7 @@
-# RecoverMind — Faculty Demonstration
+# RecoverMind — Recovery Simulation
 
 A visual, step-by-step simulation of RecoverMind's detect → diagnose → recover → verify
-pipeline, built for presenting to a faculty mentor. This is a **separate demo layer** — it
+pipeline, built for presenting the system. This is a **separate demo layer** — it
 does not modify `recovermind/`, `env/`, or the existing `webapp/` demo. It calls the real,
 unmodified `RecoverMind` controller and renders its actual output; nothing is scripted or
 faked.
@@ -10,7 +10,7 @@ faked.
 
 ```bash
 cd RecoverMind-System
-python faculty_demo/server.py
+python simulation/server.py
 ```
 
 Opens automatically at `http://localhost:8877`. No installation, no API key, no internet —
@@ -44,7 +44,7 @@ real, currently-running computation.
 ## Files
 
 ```
-faculty_demo/
+simulation/
   server.py           backend: stdlib http.server, imports recovermind/ and env/ directly
   static/
     index.html         page structure

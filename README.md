@@ -22,13 +22,13 @@ logged in `evidence/`.
 No installation, no API key, no internet — Python 3.8+ and the standard library only.
 
 ```bash
-python faculty_demo/server.py
+python simulation/server.py
 ```
 
 Opens at `http://localhost:8877`. Pick a failure scenario, click **Start Simulation**,
 and watch the pipeline animate through detection → diagnosis → recovery → verification.
 Every number shown is computed live from an actual `RecoverMind.run()` call on the code
-in this repository — nothing is scripted or pre-recorded. See `faculty_demo/README.md`
+in this repository — nothing is scripted or pre-recorded. See `simulation/README.md`
 for detail.
 
 ## Reproduce the results yourself
@@ -43,7 +43,7 @@ python tests/test_system.py      # 14 regression tests
 ```
 recovermind/     the control layer: Monitor, Diagnoser, Planner, Executor/Verifier, Memory
 env/              the task environment: a real (in-memory) tool layer + 14 fault injectors
-faculty_demo/    the interactive browser demo
+simulation/    the interactive browser demo
 demo/             the benchmark + ablation study script behind RESULTS.md
 tests/            14 regression tests
 evidence/        fresh re-execution logs and result figures backing RESULTS.md

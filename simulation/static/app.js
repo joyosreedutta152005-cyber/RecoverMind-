@@ -1,4 +1,4 @@
-// RecoverMind faculty demo - frontend.
+// RecoverMind recovery simulation - frontend.
 //
 // Everything animated here comes from one real POST /api/simulate response: two real
 // EpisodeReport objects (bare agent, RecoverMind), produced by actually calling
