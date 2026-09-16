@@ -1,0 +1,53 @@
+=== Re-execution log: RecoverMind-System scripted-host benchmark + ablation ===
+Date/time: 2026-09-06 16:28:45 UTC
+Python: Python 3.13.1
+Command: python demo/run_benchmark.py
+Working directory: RecoverMind-System/
+
+================================================================================================
+RecoverMind benchmark - 14 injected faults, one per taxonomy subclass
+================================================================================================
+fault  name                       bare ok   RM ok     diagnosed  correct lag    repair
+------------------------------------------------------------------------------------------------
+F1.1   Goal misgeneralisation     False     True      F1.1       True    1      S3+
+F1.2   Plan inconsistency         False     True      F1.2       True    2      S2+
+F1.3   Reasoning loop             False     True      F1.3       True    4      S2+
+F1.4   Anchoring                  False     True      F1.4       True    3      S1+
+F2.1   Unsupported claim          False     True      F2.1       True    1      S5+
+F2.2   Fabricated entity          False     True      F2.2       True    1      S5+
+F2.3   Observation contradiction  False     True      F2.3       True    1      S1+
+F3.1   Tool hallucination         False     True      F3.1       True    1      S4+
+F3.2   Parameter misspecification False     True      F3.2       True    3      S4+
+F3.3   Execution fault            True      True      F3.3       True    0      S4+
+F3.4   Irreversibility blindness  False     True      F3.4       True    1      S7+
+F4.1   Context overflow           False     True      F4.1       True    1      S6+
+F4.2   Retrieval relevance failur False     True      F4.2       True    2      S6+
+F4.3   Temporal or state desync   False     True      F4.3       True    1      S6+
+------------------------------------------------------------------------------------------------
+bare agent task success   :  1/14  (7%)
+RecoverMind task success  : 14/14  (100%)
+diagnosis accuracy        : 14/14  (100%)
+mean recovery cost        : 0.26 of a 1.60 budget
+false alarms on a healthy run: False  (steps 6, overhead 0 extra agent steps)
+
+================================================================================================
+ABLATION STUDY - what each component is actually worth
+================================================================================================
+configuration                              task success repair attempts
+------------------------------------------------------------------------------------------------
+bare agent, no RecoverMind                  1/14        0
+full RecoverMind                           14/14        14
+- diagnosis (generic repair)               13/14        22
+- verification gate                        14/14        14
+- diagnosis AND - verification             11/14        70
+irreversible ops forbidden (r_max=0.2)     13/14        19
+------------------------------------------------------------------------------------------------
+Reading the table:
+  * Diagnosis pays for itself: without it the system still repairs most faults,
+    but needs 22 attempts instead of 14 - it is guessing rather than choosing.
+  * Verification costs nothing when diagnosis is good (+0 tasks) but -2 tasks
+    when diagnosis is poor. The two are not independent: the verifier earns its
+    keep exactly when the rest of the chain is weak.
+  * Forbidding irreversible operators loses the one fault that genuinely needs
+    an environment-level repair. That is the safety/capability trade-off, priced.
+================================================================================================

@@ -1,0 +1,21 @@
+=== Re-execution log: regression test suite ===
+Date/time: 2026-09-06 16:28:45 UTC
+Python: Python 3.13.1
+Command: python tests/test_system.py
+
+PASS  test_agent_completes_clean_task
+PASS  test_diagnosis_accuracy_cold_memory
+PASS  test_every_fault_actually_breaks_the_agent
+PASS  test_irreversibility_ceiling_is_respected
+PASS  test_library_covers_every_subclass
+PASS  test_memory_does_not_corrupt_diagnosis
+PASS  test_memory_round_trips
+PASS  test_memory_stores_only_verified_outcomes
+PASS  test_monitor_detects_every_fault
+PASS  test_no_false_alarm_on_healthy_run
+PASS  test_no_operator_is_redundant
+PASS  test_recovers_every_fault
+PASS  test_recovery_stays_within_budget
+PASS  test_tools_never_leak_raw_exceptions
+
+14 passed, 0 failed, 14 total

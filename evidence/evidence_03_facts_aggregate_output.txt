@@ -1,0 +1,20 @@
+=== Re-execution log: live-host study aggregate scoring (facts.py) ===
+Date/time: 2026-09-06 16:28:46 UTC
+Python: Python 3.13.1
+Command: python facts.py  (run from LLM-Study/papers/build/)
+Input: LLM-Study/results/*.json (668 cached model responses back this data; not re-queried)
+
+models      : 3
+episodes    : 90  live calls: 181
+cells       : 42
+bare        : 13/42 (31.0%)
+recovermind : 32/42 (76.2%)
+gain        : 45.2 points
+diagnosis   : 30/34 (88%)
+detected    : 34/42 (81%)
+false alarms: 0  escalations: 0
+mean lag 1.26 | attempts 0.95 | cost 0.229
+paired: helped 19, hurt 0, both ok 13, both fail 10
+absorbed unaided: F1.4, F2.2, F3.2, F3.3, F3.4, F4.2
+never repaired  : F1.3
+control failures: ['Ling-3.0-Flash']

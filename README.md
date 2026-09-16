@@ -1,16 +1,23 @@
-# RecoverMind — Interactive Recovery Simulation
+# RecoverMind
 
-A visual, step-by-step demonstration of RecoverMind: a control layer that wraps an
-unmodified LLM agent to detect a mid-execution failure, diagnose its typed root cause,
-select and apply a repair strategy, and verify the repair before letting the agent
-resume.
+RecoverMind is a control layer that wraps an unmodified LLM agent to detect a
+mid-execution failure, diagnose its typed root cause, select and apply a repair
+strategy, and verify the repair before letting the agent resume.
 
-This repository is the **implementation + interactive demo only**. It does not include
-the research paper or the broader experimental audit.
+This repository contains the **implementation, its measured results, and an
+interactive visual demo**. It does not include the research paper text or the full
+experimental audit — those are shared separately.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-## Run it
+## See the results
+
+**[`RESULTS.md`](RESULTS.md)** — measured outcomes across three studies (a 90-episode
+live-LLM-host evaluation, a 14-fault scripted-host suite with a full ablation study, and
+a 40-episode generalisation check), every number backed by a fresh, real re-execution
+logged in `evidence/`.
+
+## Run the interactive demo
 
 No installation, no API key, no internet — Python 3.8+ and the standard library only.
 
@@ -20,30 +27,27 @@ python faculty_demo/server.py
 
 Opens at `http://localhost:8877`. Pick a failure scenario, click **Start Simulation**,
 and watch the pipeline animate through detection → diagnosis → recovery → verification.
+Every number shown is computed live from an actual `RecoverMind.run()` call on the code
+in this repository — nothing is scripted or pre-recorded. See `faculty_demo/README.md`
+for detail.
 
-## What this actually is
+## Reproduce the results yourself
 
-`faculty_demo/` is a browser UI over the real `recovermind/` control layer and the real
-`env/` task environment — it is not a mockup. Every number shown (anomaly scores,
-diagnosis confidence, ranked alternative hypotheses, the chosen repair operator, the
-three post-condition checks, before/after step counts) comes from an actual call to
-`RecoverMind(enabled=False/True).run(injected=...)` on the code in this repository, run
-live when you click Start. Nothing is scripted or pre-recorded.
-
-Each of the 7 scenario cards is a real, implemented fault type from the taxonomy in
-`recovermind/taxonomy.py` / `env/faults.py` — not an illustrative label. Selecting one
-also shows the ground-truth plan position the fault is declared to corrupt
-(`env/faults.py`'s own `INJECT_AT` table), and the live run confirms where it actually
-landed, so you can see the two agree.
-
-Full detail on what's real vs. how it's presented: `faculty_demo/README.md`.
+```bash
+python demo/run_benchmark.py     # the 14-fault suite + ablation study
+python tests/test_system.py      # 14 regression tests
+```
 
 ## Structure
 
 ```
 recovermind/     the control layer: Monitor, Diagnoser, Planner, Executor/Verifier, Memory
 env/              the task environment: a real (in-memory) tool layer + 14 fault injectors
-faculty_demo/    the browser UI: server.py (stdlib http.server) + static/ (HTML/CSS/JS)
+faculty_demo/    the interactive browser demo
+demo/             the benchmark + ablation study script behind RESULTS.md
+tests/            14 regression tests
+evidence/        fresh re-execution logs and result figures backing RESULTS.md
+RESULTS.md       measured results, with reproduction instructions
 requirements.txt  Python 3.8+, stdlib only (pytest is an optional dev-only extra)
 ```
 
