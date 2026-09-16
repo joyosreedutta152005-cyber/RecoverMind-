@@ -51,6 +51,14 @@ RESULTS.md       measured results, with reproduction instructions
 requirements.txt  Python 3.8+, stdlib only (pytest is an optional dev-only extra)
 ```
 
+## Authors
+
+- **Soumik Biswas Joy** (corresponding author) — Department of Computer Science and Engineering, Sharda University
+- **Joyosree Rani Dutta** — Department of Computer Science and Engineering, Sharda University
+- **Dr. Vasudha Arora** — Department of Computer Science and Engineering, Sharda University
+
+See [`CITATION.cff`](CITATION.cff) for citation details.
+
 ## License
 
 MIT — see `LICENSE`.

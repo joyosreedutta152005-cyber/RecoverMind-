@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "RecoverMind: An Autonomous Failure Diagnosis and Adaptive Recovery Architecture for LLM Agents"
+type: software
+authors:
+  - family-names: "Biswas Joy"
+    given-names: "Soumik"
+    email: soumikbiswas014@gmail.com
+    affiliation: "Department of Computer Science and Engineering, Sharda University"
+  - family-names: "Dutta"
+    given-names: "Joyosree Rani"
+    email: joyosreedutta152005@gmail.com
+    affiliation: "Department of Computer Science and Engineering, Sharda University"
+  - family-names: "Arora"
+    given-names: "Vasudha"
+    name-suffix: "Dr."
+    email: Vasudha.arora@sharda.ac.in
+    affiliation: "Department of Computer Science and Engineering, Sharda University"
+repository-code: "https://github.com/joyosreedutta152005-cyber/RecoverMind-"
+license: MIT
